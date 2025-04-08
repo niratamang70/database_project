@@ -1,10 +1,18 @@
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import RecipePage from './pages/RecipePage';
+import RootLayout from './components/layout/RootLayout';
 
-function App() {
+const App = () => {
   return (
-    <div className="App" style={{ marginTop: '50px' ,textAlign: 'center'}}>
-      welcome to recipe book
-    </div>
+    <RootLayout>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="recipes" element={<RecipePage />} />
+    </Routes>
+    </RootLayout>
   );
-}
+};
 
 export default App;
