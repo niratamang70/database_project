@@ -2,8 +2,15 @@ import React from 'react';
 
 import { Box, Text, Flex, Icon, Image } from '@chakra-ui/react';
 import { FaStar } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
 
-export const RecipeCard = ({ title, rating, imageUrl }) => {
+export const RecipeCard = ({ recipe_id, recipe_name, rating = 4, image_url }) => {
+  const navigate = useNavigate();
+
+  const handleRecipeDetail = () => {
+    navigate(`/recipes/${recipe_id}`);
+  };
+
   return (
     <Flex
       flexDirection="column"
@@ -11,12 +18,13 @@ export const RecipeCard = ({ title, rating, imageUrl }) => {
       _hover={{
         color: 'orange'
       }}
+      onClick={handleRecipeDetail}
     >
       <Box
-        borderRadius="6px"
+        borderRadius="lg"
         overflow="hidden"
         position="relative"
-        width="100%"
+        width="22.313rem"
         height="15.438rem"
         sx={{
           '& img': {
@@ -27,7 +35,7 @@ export const RecipeCard = ({ title, rating, imageUrl }) => {
           }
         }}
       >
-        <Image src={imageUrl} width={357} height={247} alt="noodles" layout="responsive" objectFit="cover" />
+        <Image src={image_url} width={357} height={247} alt="noodles" layout="responsive" objectFit="cover" />
       </Box>
       <Box>
         <Flex flexDirection="row" alignItems="center" gap="0.25rem" marginBottom="0.25rem">
@@ -37,7 +45,7 @@ export const RecipeCard = ({ title, rating, imageUrl }) => {
         </Flex>
 
         <Text fontSize="1.25rem" fontWeight="600" transition="0.8s ease">
-          {title}
+          {recipe_name}
         </Text>
       </Box>
     </Flex>

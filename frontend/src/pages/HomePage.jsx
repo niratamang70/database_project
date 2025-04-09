@@ -1,5 +1,4 @@
-
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -22,15 +21,35 @@ import { RECIPE } from '../data/recipe';
 import CategoryCard from '../components/card/CategoryCard';
 import '@fontsource/playfair-display';
 import { RecipeCard } from '../components/card/RecipeCard';
+import axios from 'axios';
 
 const HomePage = () => {
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/recipes/all');
+        console.log(response.data);
+        setRecipes(response.data);
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipes();
+  }, []);
+
   return (
     <Fragment>
       <Box
         backgroundImage="url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092')"
         backgroundSize="cover"
         backgroundPosition="center"
-        width="calc(100vw - 1rem)"
+        width="calc(100vw - 2rem)"
         height="60vh"
         display="flex"
         justifyContent="center"
@@ -79,7 +98,7 @@ const HomePage = () => {
             }}
             gap={8}
           >
-            {RECIPE.map(({ id, ...rest }) => (
+            {recipes.map(({ id, ...rest }) => (
               <GridItem key={id}>
                 <RecipeCard {...rest} />
               </GridItem>

@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import { Box, Flex, HStack, Stack, useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { useLocation } from 'react-router-dom'; 
+import { Link, useLocation } from 'react-router-dom';
+import { FaUser } from 'react-icons/fa6';
 import NavLink from './NavLink';
 import HamburgerMenu from './HamburgerMenu';
 
@@ -18,8 +19,8 @@ const hoverStyle = {
 export default function Navbar() {
   const [colorMode, setColorMode] = React.useState('light');
   const { isOpen, onToggle } = useDisclosure();
-  const location = useLocation(); 
- 
+  const location = useLocation();
+
   const toggleColorMode = () => setColorMode(colorMode === 'light' ? 'dark' : 'light');
 
   return (
@@ -32,25 +33,18 @@ export default function Navbar() {
           <HamburgerMenu isOpen={isOpen} onToggle={onToggle} />
           <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
             {NAVBAR_ITEMS.map((item, index) => (
-              <NavLink
-                key={index}
-                href={item.link}
-                _hover={hoverStyle}
-                isActive={location.pathname === item.link} 
-              >
+              <NavLink key={index} href={item.link} _hover={hoverStyle} isActive={location.pathname === item.link}>
                 {item.label}
               </NavLink>
             ))}
           </HStack>
           <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
             <Stack direction={'row'} spacing={7}>
-              <Box onClick={toggleColorMode} cursor="pointer">
-                {colorMode === 'light' ? (
-                  <MoonIcon _hover={{ background: 'transparent' }} />
-                ) : (
-                  <SunIcon _hover={{ bg: 'transparent' }} />
-                )}
-              </Box>
+              <Link to="/profile">
+                <Box onClick={toggleColorMode} cursor="pointer">
+                  <FaUser color="orange" />
+                </Box>
+              </Link>
             </Stack>
           </Flex>
         </Flex>

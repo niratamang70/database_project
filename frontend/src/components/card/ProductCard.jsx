@@ -14,10 +14,13 @@ const ProductCard = ({ title, time, image }) => {
         rounded={'lg'}
         pos={'relative'}
         zIndex={1}
+        height="100%"
+        display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
       >
         <Box
           rounded={'lg'}
-          mt={-12}
           pos={'relative'}
           height={'230px'}
           _after={{
@@ -28,7 +31,6 @@ const ProductCard = ({ title, time, image }) => {
             pos: 'absolute',
             top: 5,
             left: 0,
-            // backgroundImage: `url(${image})`,
             filter: 'blur(1px)',
             zIndex: -1
           }}
@@ -40,19 +42,21 @@ const ProductCard = ({ title, time, image }) => {
         >
           <Image rounded={'lg'} height={230} width={282} objectFit={'cover'} src={image} alt="#" />
         </Box>
-        <Stack pt={8}>
-          <Heading fontSize={'2xl'} fontFamily={'body'} fontWeight={500}>
+
+        <Stack flex="1" pt={8} pb={4}>
+          <Heading fontSize={'2xl'} fontFamily={'body'} fontWeight={500} noOfLines={2}>
             {title}
           </Heading>
-          <Stack direction={'row'} align={'center'} justifyContent={'space-between'}>
-            <Stack direction={'row'} align={'center'}>
-              <Clock size={20} />
-              <Text fontWeight={500} fontSize={'lg'}>
-                {time}
-              </Text>
-            </Stack>
-            <Bookmark size={20} />
+        </Stack>
+
+        <Stack direction={'row'} align={'center'} justifyContent={'space-between'}>
+          <Stack direction={'row'} align={'center'}>
+            <Clock size={20} />
+            <Text fontWeight={500} fontSize={'lg'}>
+              {time}
+            </Text>
           </Stack>
+          <Bookmark size={20} />
         </Stack>
       </Box>
     </Center>
