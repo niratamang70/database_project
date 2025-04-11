@@ -1,6 +1,16 @@
 import React, { Fragment } from 'react';
-import { Box, Flex, HStack, Stack, useColorModeValue, useDisclosure } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import {
+  Box,
+  Flex,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Stack,
+  useColorModeValue,
+  useDisclosure
+} from '@chakra-ui/react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa6';
 import NavLink from './NavLink';
@@ -8,7 +18,8 @@ import HamburgerMenu from './HamburgerMenu';
 
 export const NAVBAR_ITEMS = [
   { label: 'Home', link: '/' },
-  { label: 'Recipes', link: '/recipes' }
+  { label: 'Recipes', link: '/recipes' },
+  { label: 'My Recipes', link: '/my-recipes' }
 ];
 
 const hoverStyle = {
@@ -17,11 +28,8 @@ const hoverStyle = {
 };
 
 export default function Navbar() {
-  const [colorMode, setColorMode] = React.useState('light');
   const { isOpen, onToggle } = useDisclosure();
   const location = useLocation();
-
-  const toggleColorMode = () => setColorMode(colorMode === 'light' ? 'dark' : 'light');
 
   return (
     <Fragment>
@@ -40,11 +48,18 @@ export default function Navbar() {
           </HStack>
           <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
             <Stack direction={'row'} spacing={7}>
-              <Link to="/profile">
-                <Box onClick={toggleColorMode} cursor="pointer">
+              <Menu>
+                <MenuButton>
                   <FaUser color="orange" />
-                </Box>
-              </Link>
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>
+                    <Link to="/profile">My Profile</Link>
+                  </MenuItem>
+                  <MenuItem>Settings</MenuItem>
+                  <MenuItem>Log out</MenuItem>
+                </MenuList>
+              </Menu>
             </Stack>
           </Flex>
         </Flex>

@@ -35,7 +35,14 @@ export const RecipeCard = ({ recipe_id, recipe_name, rating = 4, image_url }) =>
           }
         }}
       >
-        <Image src={image_url} width={357} height={247} alt="noodles" layout="responsive" objectFit="cover" />
+        <Image
+          src={image_url ?? '/images/no-recipe.png'}
+          width={357}
+          height={247}
+          alt={recipe_name}
+          layout="responsive"
+          objectFit="cover"
+        />
       </Box>
       <Box>
         <Flex flexDirection="row" alignItems="center" gap="0.25rem" marginBottom="0.25rem">

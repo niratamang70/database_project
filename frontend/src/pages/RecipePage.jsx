@@ -31,11 +31,16 @@ const RecipePage = () => {
   const [recipeName, setRecipeName] = React.useState('');
   const [categoryId, setCategoryId] = React.useState('');
   const [instructions, setInstructions] = React.useState('');
+  const [recipeImage, setRecipeImage] = React.useState('');
   const [ingredients, setIngredients] = React.useState([{ name: '', quantity: '', unit: '', is_optional: false }]);
 
   // Handle recipe name change
   const handleRecipeNameChange = e => {
     setRecipeName(e.target.value);
+  };
+
+  const handleRecipeImageChange = e => {
+    setRecipeImage(e.target.value);
   };
 
   // Handle category selection
@@ -73,12 +78,13 @@ const RecipePage = () => {
       const response = await axios.post('http://localhost:3001/recipes', {
         recipe_name: recipeName,
         category_id: categoryId,
+        image_url: recipeImage,
         instructions,
         ingredients
       });
       console.log(response.data);
       alert('Recipe added successfully!');
-   
+
       setRecipeName('');
       setCategoryId('');
       setInstructions('');
@@ -128,7 +134,7 @@ const RecipePage = () => {
         </Box>
       </Container>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="3xl" >
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="3xl">
         <ModalOverlay />
         <ModalContent padding={4} borderRadius="md">
           <ModalHeader>Add New Recipe</ModalHeader>
@@ -142,7 +148,7 @@ const RecipePage = () => {
 
               <FormControl>
                 <FormLabel>Image URL</FormLabel>
-                <Input type="text" />
+                <Input type="text" value={recipeImage} onChange={handleRecipeImageChange} required />
               </FormControl>
 
               <FormControl>
@@ -181,7 +187,7 @@ const RecipePage = () => {
                         <option value="tbsp">tbsp</option>
                         <option value="cups">cups</option>
                       </Select>
-                      <Icon as={DeleteIcon} cursor="pointer" onClick={()=>removeIngredient(index)} />
+                      <Icon as={DeleteIcon} cursor="pointer" onClick={() => removeIngredient(index)} />
                     </Flex>
                   ))}
                 </Flex>
@@ -191,7 +197,6 @@ const RecipePage = () => {
                 </Button>
               </FormControl>
 
-          
               <FormControl>
                 <FormLabel>Instructions</FormLabel>
                 <Textarea
@@ -204,7 +209,6 @@ const RecipePage = () => {
             </Flex>
           </ModalBody>
 
-     
           <ModalFooter>
             <Button colorScheme="orange" mr={3} onClick={handleSubmit}>
               Save

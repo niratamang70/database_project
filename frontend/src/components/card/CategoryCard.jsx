@@ -21,10 +21,10 @@ const CategoryCard = ({ title, imageUrl }) => {
         }}
       >
         <Image
-          src={imageUrl}
+          src={imageUrl ?? '/images/no-recipe.png'}
           width="160"
           height="160"
-          alt="noodles"
+          alt={title}
           layout="responsive"
           objectFit="cover"
           style={{ borderRadius: '6px', width: '100%', height: '100%' }}
