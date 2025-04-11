@@ -5,6 +5,7 @@ import RecipePage from './pages/RecipePage';
 import RootLayout from './components/layout/RootLayout';
 import UsersPage from './pages/UsersPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
+import MyRecipes from './pages/MyRecipes';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="recipes" element={<RecipePage />} />
         <Route path="recipes/:id" element={<RecipeDetailPage />} />
         <Route path="profile" element={<UsersPage />} />
+        <Route path="my-recipes" element={<MyRecipes />} />
       </Routes>
     </RootLayout>
   );
