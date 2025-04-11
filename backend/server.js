@@ -45,6 +45,7 @@ app.get('/recipes/all', (req, res) => {
   });
 });
 
+//get all the recipes
 app.get('/recipes/all', (req, res) => {
   database.query('SELECT * FROM recipes', (err, results) => {
     if (err) return res.status(500).send(err);
@@ -99,7 +100,7 @@ app.get('/recipes/:id', (req, res) => {
       ingredients: results.map(result => ({
         ingredient_id: result.ingredient_id,
         ingredient_name: result.ingredient_name,
-        unit:result.unit_of_measurement,
+        unit: result.unit_of_measurement,
         quantity: result.quantity,
         is_optional: result.is_optional
       }))
@@ -112,15 +113,16 @@ app.get('/recipes/:id', (req, res) => {
 
 //create a new recipe
 app.post('/recipes', (req, res) => {
-  const { recipe_name, category_id, instructions, ingredients } = req.body;
+  const { recipe_name, image_url, category_id, instructions, ingredients } = req.body;
 
   database.beginTransaction(err => {
     if (err) {
       return res.status(500).send('Error starting sql transaction');
     }
 
-    const insertRecipeQuery = 'INSERT INTO recipes (recipe_name, category_id, instructions) VALUES (?, ?, ?)';
-    database.query(insertRecipeQuery, [recipe_name, category_id, instructions], (err, result) => {
+    const insertRecipeQuery =
+      'INSERT INTO recipes (recipe_name,image_url, category_id, instructions) VALUES (?, ?, ?, ?)';
+    database.query(insertRecipeQuery, [recipe_name, image_url, category_id, instructions], (err, result) => {
       if (err) {
         return database.rollback(() => {
           return res.status(500).send('Error adding recipe');
@@ -195,25 +197,27 @@ app.post('/recipes', (req, res) => {
   });
 });
 
-//delete a recipe by ID
-app.delete('/:id', async (req, res) => {
-  const { id } = req.params;
+//delete a recipe
+app.delete('/recipes/:id', async (req, res) => {
+  const recipeId = req.params.id;
+
   try {
-    const [recipe] = await db.query('SELECT * FROM recipes WHERE recipe_id = ?', [id]);
-    
-    if (recipe.length === 0) {
-      return res.status(404).json({ error: 'Recipe not found' });
-    }
+    const sql = 'DELETE FROM recipes WHERE recipe_id = ?';
+    database.query(sql, [recipeId], (err, result) => {
+      if (err) {
+        console.error('Error deleting recipe:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
 
-    // Delete the recipe
-    await db.query('DELETE FROM recipes WHERE recipe_id = ?', [id]);
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Recipe not found' });
+      }
 
-    res.json({ message: 'Recipe deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting recipe:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+      res.json({ message: 'Recipe deleted successfully' });
+    });
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Unexpected error occurred' });
   }
 });
-
-
 app.listen(port, () => console.log(`Server running on port ${port}`));

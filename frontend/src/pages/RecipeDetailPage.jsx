@@ -1,12 +1,24 @@
-import { Box, Container, Divider, Flex, Heading, Image, Text } from '@chakra-ui/react';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Box, Container, Divider, Flex, Heading, IconButton, Image, Text } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons';
+import { useParams,useNavigate } from 'react-router-dom';
 
 const RecipeDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const handleRecipeDelete = async () => {
+    try {
+      const res = await axios.delete(`http://localhost:3001/recipes/${id}`);
+      navigate('/my-recipes');
+      console.log(res.data.message);
+    } catch (error) {
+      console.error('Error deleting recipe:', error);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -26,8 +38,7 @@ const RecipeDetailPage = () => {
     <Container maxW="container.xl">
       <Box padding="1.5rem">
         <Heading>{recipe?.recipe_name}</Heading>
-
-        <Divider marginTop={5} marginBottom={5} />
+        <Divider marginTop={5} marginBottom={9} />
         <Box overflow="hidden" width="100%" height="30rem" position="relative">
           <Image
             rounded={'lg'}
@@ -38,7 +49,6 @@ const RecipeDetailPage = () => {
             borderRadius="lg"
           />
         </Box>
-
         <Flex flexDirection="row" gap="2rem" marginTop={9}>
           <Box>
             <Heading as="h4" size="lg" fontFamily="'Playfair Display', serif">
@@ -62,6 +72,14 @@ const RecipeDetailPage = () => {
             </Box>
           </Box>
         </Flex>
+        <IconButton
+          marginTop={5}
+          background="transparent"
+          _hover={{ background: 'transparent' }}
+          aria-label="delete recipe"
+          onClick={handleRecipeDelete}
+          icon={<DeleteIcon color="orange" w={6} h={6} cursor="pointer" />}
+        />
       </Box>
     </Container>
   );
