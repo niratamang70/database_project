@@ -1,9 +1,10 @@
 import { Box, Center, useColorModeValue, Heading, Text, Stack, Image } from '@chakra-ui/react';
-import { Bookmark, Clock } from 'react-feather';
+import { Clock } from 'react-feather';
+import { FaRegEdit } from 'react-icons/fa';
 
-const ProductCard = ({ title, time, image }) => {
+const ProductCard = ({ title, time, image, handleRecipeEdit }) => {
   return (
-    <Center py={12}>
+    <Center>
       <Box
         role={'group'}
         p={6}
@@ -40,7 +41,14 @@ const ProductCard = ({ title, time, image }) => {
             }
           }}
         >
-          <Image rounded={'lg'} height={230} width={282} objectFit={'cover'} src={image} alt="#" />
+          <Image
+            rounded={'lg'}
+            height={230}
+            width={282}
+            objectFit={'cover'}
+            src={image ?? '/images/no-recipe.png'}
+            alt={title}
+          />
         </Box>
 
         <Stack flex="1" pt={8} pb={4}>
@@ -53,10 +61,10 @@ const ProductCard = ({ title, time, image }) => {
           <Stack direction={'row'} align={'center'}>
             <Clock size={20} />
             <Text fontWeight={500} fontSize={'lg'}>
-              {time}
+              {time ?? '1 hour'}
             </Text>
           </Stack>
-          <Bookmark size={20} />
+          <FaRegEdit size={20} style={{ cursor: 'pointer' }} onClick={handleRecipeEdit} />
         </Stack>
       </Box>
     </Center>

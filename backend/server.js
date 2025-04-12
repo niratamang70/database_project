@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
 
 // get all recipes
 app.get('/recipes/all', (req, res) => {
-  database.query('SELECT recipe_id, recipe_name, image_url FROM recipes', (err, results) => {
+  database.query('SELECT recipe_id, recipe_name, image_url, duration FROM recipes', (err, results) => {
     if (err) return res.status(500).send(err);
     res.json(results);
   });

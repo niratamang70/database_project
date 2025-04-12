@@ -17,7 +17,6 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import { GiKnifeFork } from 'react-icons/gi';
 import { CATEGORY } from '../data/category';
-import { RECIPE } from '../data/recipe';
 import CategoryCard from '../components/card/CategoryCard';
 import '@fontsource/playfair-display';
 import { RecipeCard } from '../components/card/RecipeCard';
