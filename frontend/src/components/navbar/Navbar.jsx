@@ -57,7 +57,9 @@ export default function Navbar() {
                     <Link to="/profile">My Profile</Link>
                   </MenuItem>
                   <MenuItem>Settings</MenuItem>
-                  <MenuItem>Log out</MenuItem>
+                  <MenuItem>
+                    <Link to="/login">Log out</Link>
+                  </MenuItem>
                 </MenuList>
               </Menu>
             </Stack>
