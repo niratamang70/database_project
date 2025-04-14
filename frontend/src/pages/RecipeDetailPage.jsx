@@ -1,39 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Container, Divider, Flex, Heading, IconButton, Image, Text } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
-import { useParams,useNavigate } from 'react-router-dom';
+import { Box, Container, Divider, Flex, Heading, Image, Text } from '@chakra-ui/react';
+import { useParams } from 'react-router-dom';
 
 const RecipeDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const handleRecipeDelete = async () => {
-    try {
-      const res = await axios.delete(`http://localhost:3001/recipes/${id}`);
-      navigate('/my-recipes');
-      console.log(res.data.message);
-    } catch (error) {
-      console.error('Error deleting recipe:', error);
-    }
-  };
-
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/recipes/${id}`)
-      .then(response => {
+    const fetchRecipe = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/recipes/${id}`);
         setRecipe(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching recipe:', error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchRecipe();
   }, [id]);
 
-  console.log(recipe, 'here is the recipe');
   return (
     <Container maxW="container.xl">
       <Box padding="1.5rem">
@@ -42,8 +31,8 @@ const RecipeDetailPage = () => {
         <Box overflow="hidden" width="100%" height="30rem" position="relative">
           <Image
             rounded={'lg'}
-            src={recipe?.recipe_image}
-            alt="noodles"
+            src={recipe?.recipe_image ?? '/images/no-recipe.png'}
+            alt={recipe?.recipe_name}
             layout="responsive"
             objectFit="cover"
             borderRadius="lg"
@@ -72,14 +61,14 @@ const RecipeDetailPage = () => {
             </Box>
           </Box>
         </Flex>
-        <IconButton
+        {/* <IconButton
           marginTop={5}
           background="transparent"
           _hover={{ background: 'transparent' }}
           aria-label="delete recipe"
           onClick={handleRecipeDelete}
           icon={<DeleteIcon color="orange" w={6} h={6} cursor="pointer" />}
-        />
+        /> */}
       </Box>
     </Container>
   );

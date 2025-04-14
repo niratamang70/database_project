@@ -1,8 +1,9 @@
 import { Box, Center, useColorModeValue, Heading, Text, Stack, Image } from '@chakra-ui/react';
 import { Clock } from 'react-feather';
 import { FaRegEdit } from 'react-icons/fa';
+import { AiOutlineDelete } from 'react-icons/ai';
 
-const ProductCard = ({ title, time, image, handleRecipeEdit }) => {
+const ProductCard = ({ id, title, time, image, handleRecipeEdit, handleShowRecipeDetails, handleRecipeDelete }) => {
   return (
     <Center>
       <Box
@@ -52,7 +53,15 @@ const ProductCard = ({ title, time, image, handleRecipeEdit }) => {
         </Box>
 
         <Stack flex="1" pt={8} pb={4}>
-          <Heading fontSize={'2xl'} fontFamily={'body'} fontWeight={500} noOfLines={2}>
+          <Heading
+            fontSize={'2xl'}
+            fontFamily={'body'}
+            fontWeight={500}
+            noOfLines={2}
+            onClick={() => handleShowRecipeDetails(id)}
+            style={{ cursor: 'pointer' }}
+            _hover={{ color: 'orange' }}
+          >
             {title}
           </Heading>
         </Stack>
@@ -64,7 +73,10 @@ const ProductCard = ({ title, time, image, handleRecipeEdit }) => {
               {time ?? '1 hour'}
             </Text>
           </Stack>
-          <FaRegEdit size={20} style={{ cursor: 'pointer' }} onClick={handleRecipeEdit} />
+          <Stack direction={'row'} align={'center'}>
+            <FaRegEdit size={20} style={{ cursor: 'pointer' }} onClick={() => handleRecipeEdit(id)} />
+            <AiOutlineDelete size={22} style={{ cursor: 'pointer' }} onClick={() => handleRecipeDelete(id)} />
+          </Stack>
         </Stack>
       </Box>
     </Center>
