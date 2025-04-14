@@ -1,30 +1,10 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Flex,
-  Input,
-  InputGroup,
-  InputRightElement,
-  InputLeftElement,
-  Icon,
-  useColorModeValue,
-  Heading,
-  Container,
-  Grid,
-  GridItem,
-  Text,
-  Center,
-  Spinner
-} from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
-import { GiKnifeFork } from 'react-icons/gi';
-import { CATEGORY } from '../data/category';
+import { Box, Flex, Heading, Container, Grid, GridItem, Text, Center, Spinner } from '@chakra-ui/react';
 import CategoryCard from '../components/card/CategoryCard';
 import '@fontsource/playfair-display';
 import { RecipeCard } from '../components/card/RecipeCard';
-import axios from 'axios';
 import { getAllCategories } from '../api/categories.api';
+import { getAllRecipes } from '../api/recipes.api';
 
 const HomePage = () => {
   const [recipes, setRecipes] = useState([]);
@@ -33,15 +13,11 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/recipes/all');
-        console.log(response.data);
-        setRecipes(response.data);
-      } catch (error) {
-        console.error('Error fetching recipes:', error);
-      } finally {
-        setLoading(false);
+      const response = await getAllRecipes();
+      if (response) {
+        setRecipes(response);
       }
+      setLoading(false);
     };
 
     const fetchCategories = async () => {
@@ -62,7 +38,7 @@ const HomePage = () => {
         </Center>
       )}
       <Box
-        backgroundImage="url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092')"
+        backgroundImage="/images/recipe-hero-image.jpeg"
         backgroundSize="cover"
         backgroundPosition="center"
         width="calc(100vw - 2rem)"
