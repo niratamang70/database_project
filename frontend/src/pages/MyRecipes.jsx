@@ -28,7 +28,7 @@ import {
   InputRightElement
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { DeleteIcon, RepeatIcon, SearchIcon } from '@chakra-ui/icons'; // Chakra UI components for UI elements
+import { AddIcon, DeleteIcon, RepeatIcon, SearchIcon } from '@chakra-ui/icons'; // Chakra UI components for UI elements
 
 import ProductCard from '../components/card/ProductCard';
 import { useNavigate } from 'react-router-dom';
@@ -60,6 +60,7 @@ const MyRecipes = () => {
   const [ingredientUnitList, setIngredientUnitList] = useState([]);
   const [searchName, setSearchName] = useState('');
   const [searchCategory, setSearchCategory] = useState('');
+  const [cookingTime, setCookingTime] = useState('');
 
   // Handle recipe name change
   const handleRecipeNameChange = e => {
@@ -68,6 +69,10 @@ const MyRecipes = () => {
 
   const handleRecipeImageChange = e => {
     setRecipeImage(e.target.value);
+  };
+
+  const handleRecipeCookingChange = e => {
+    setCookingTime(e.target.value);
   };
 
   // Handle category selection
@@ -104,6 +109,7 @@ const MyRecipes = () => {
       recipe_name: recipeName,
       category_id: categoryId,
       image_url: recipeImage,
+      duration: cookingTime,
       instructions,
       ingredients
     };
@@ -167,6 +173,7 @@ const MyRecipes = () => {
       setRecipeName(recipeData.recipe_name);
       setRecipeImage(recipeData.recipe_image);
       setCategoryId(recipeData.category_id);
+      setCookingTime(recipeData.duration);
       setInstructions(recipeData.instructions);
       setIngredients(
         recipeData.ingredients.map(ingredient => ({
@@ -336,7 +343,7 @@ const MyRecipes = () => {
                 handleRecipeDelete={handleDeleteRecipe}
               />
             ))}
-            <Button colorScheme="orange" onClick={createRecipe} marginTop={5} width="50%">
+            <Button leftIcon={<AddIcon />} colorScheme="orange" onClick={createRecipe} marginTop={5} width="50%">
               Add recipe
             </Button>
           </SimpleGrid>
@@ -353,12 +360,35 @@ const MyRecipes = () => {
             <Flex flexDirection="column" gap="3">
               <FormControl>
                 <FormLabel>Recipe Name</FormLabel>
-                <Input type="text" value={recipeName} onChange={handleRecipeNameChange} required />
+                <Input
+                  type="text"
+                  placeholder="For example: momo"
+                  value={recipeName}
+                  onChange={handleRecipeNameChange}
+                  required
+                />
               </FormControl>
 
               <FormControl>
                 <FormLabel>Image URL</FormLabel>
-                <Input type="text" value={recipeImage} onChange={handleRecipeImageChange} required />
+                <Input
+                  type="text"
+                  placeholder="Please provide image URL"
+                  value={recipeImage}
+                  onChange={handleRecipeImageChange}
+                  required
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Cooking Time</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="For example: 30 minutes"
+                  value={cookingTime}
+                  onChange={handleRecipeCookingChange}
+                  required
+                />
               </FormControl>
 
               <FormControl>

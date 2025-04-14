@@ -72,10 +72,6 @@ app.get('/recipes/all', (req, res) => {
   });
 });
 
-
-
-
-
 //get all the recipes
 app.get('/recipes/all', (req, res) => {
   database.query('SELECT * FROM recipes', (err, results) => {
@@ -95,6 +91,7 @@ app.get('/recipes/:id', (req, res) => {
       r.image_url,
       r.instructions,
       r.category_id,
+      r.duration,
       c.category_name,
       i.ingredient_id,
       i.ingredient_name,
@@ -117,7 +114,6 @@ app.get('/recipes/:id', (req, res) => {
   `;
 
   database.query(query, [recipeId], (err, results) => {
-    console.log('Results:', results);
     if (err) return res.status(500).send(err);
 
     if (results.length === 0) {
@@ -129,6 +125,7 @@ app.get('/recipes/:id', (req, res) => {
       recipe_name: results[0].recipe_name,
       recipe_image: results[0].image_url,
       category_id: results[0].category_id,
+      duration: results[0].duration,
       instructions: results[0].instructions,
       category: results[0].category_name,
       ingredients: results.map(result => ({
@@ -145,95 +142,9 @@ app.get('/recipes/:id', (req, res) => {
   });
 });
 
-
 //create a new recipe
-// app.post('/recipes', (req, res) => {
-//   const { recipe_name, image_url, category_id, instructions, ingredients } = req.body;
-
-//   database.beginTransaction(err => {
-//     if (err) {
-//       return res.status(500).send('Error starting sql transaction');
-//     }
-
-//     const insertRecipeQuery =
-//       'INSERT INTO recipes (recipe_name,image_url, category_id, instructions) VALUES (?, ?, ?, ?)';
-//     database.query(insertRecipeQuery, [recipe_name, image_url, category_id, instructions], (err, result) => {
-//       if (err) {
-//         return database.rollback(() => {
-//           return res.status(500).send('Error adding recipe');
-//         });
-//       }
-
-//       const recipeId = result.insertId;
-
-//       const ingredientPromises = ingredients.map(ingredient => {
-//         return new Promise((resolve, reject) => {
-//           const checkIngredientQuery = 'SELECT * FROM ingredients WHERE ingredient_id = ?';
-//           database.query(checkIngredientQuery, [ingredient.name], (err, existingIngredients) => {
-//             if (err) return reject(err);
-
-//             let ingredientId;
-
-//             if (existingIngredients.length > 0) {
-//               ingredientId = existingIngredients[0].ingredient_id;
-//               resolve(ingredientId);
-//             } else {
-//               const insertIngredientQuery =
-//                 'INSERT INTO ingredients (ingredient_name, unit_id) VALUES (?, ?)';
-//               database.query(insertIngredientQuery, [ingredient.name, ingredient.ingredient_unit], (err, result) => {
-//                 if (err) return reject(err);
-//                 resolve(result.insertId);
-//               });
-//             }
-//           });
-//         });
-//       });
-
-//       Promise.all(ingredientPromises)
-//         .then(ingredientIds => {
-//           const insertRecipeIngredientsPromises = ingredientIds.map((ingredientId, index) => {
-//             const insertRecipeIngredientQuery =
-//               'INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, is_optional) VALUES (?, ?, ?, ?)';
-//             return new Promise((resolve, reject) => {
-//               database.query(
-//                 insertRecipeIngredientQuery,
-//                 [recipeId, ingredientId, ingredients[index].quantity, ingredients[index].is_optional],
-//                 err => {
-//                   if (err) return reject(err);
-//                   resolve();
-//                 }
-//               );
-//             });
-//           });
-
-//           Promise.all(insertRecipeIngredientsPromises)
-//             .then(() => {
-//               database.commit(err => {
-//                 if (err) {
-//                   return database.rollback(() => {
-//                     return res.status(500).send('Error committing transaction');
-//                   });
-//                 }
-//                 res.status(201).send({ message: 'Recipe added successfully' });
-//               });
-//             })
-//             .catch(err => {
-//               database.rollback(() => {
-//                 return res.status(500).send('Error linking ingredients to recipe');
-//               });
-//             });
-//         })
-//         .catch(err => {
-//           database.rollback(() => {
-//             return res.status(500).send('Error processing ingredients');
-//           });
-//         });
-//     });
-//   });
-// });
-
 app.post('/recipes', (req, res) => {
-  const { recipe_name, image_url, category_id, instructions, ingredients } = req.body;
+  const { recipe_name, image_url, category_id, duration, instructions, ingredients } = req.body;
 
   database.beginTransaction(err => {
     if (err) {
@@ -241,10 +152,10 @@ app.post('/recipes', (req, res) => {
     }
 
     const insertRecipeQuery = `
-      INSERT INTO recipes (recipe_name, image_url, category_id, instructions)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO recipes (recipe_name, image_url, category_id, duration, instructions)
+      VALUES (?, ?, ?, ?, ?)
     `;
-    database.query(insertRecipeQuery, [recipe_name, image_url, category_id, instructions], (err, result) => {
+    database.query(insertRecipeQuery, [recipe_name, image_url, category_id, duration, instructions], (err, result) => {
       if (err) {
         return database.rollback(() => res.status(500).send('Error adding recipe'));
       }
@@ -284,98 +195,10 @@ app.post('/recipes', (req, res) => {
   });
 });
 
-// app.put('/recipes/:id', (req, res) => {
-//   const recipeId = req.params.id;
-//   const { recipe_name, image_url, category_id, instructions, ingredients } = req.body;
-
-//   database.beginTransaction(err => {
-//     if (err) return res.status(500).send('Error starting SQL transaction');
-
-//     // Update recipe main details
-//     const updateRecipeQuery = `
-//       UPDATE recipes
-//       SET recipe_name = ?, image_url = ?, category_id = ?, instructions = ?
-//       WHERE recipe_id = ?
-//     `;
-//     database.query(updateRecipeQuery, [recipe_name, image_url, category_id, instructions, recipeId], err => {
-//       if (err) {
-//         return database.rollback(() => res.status(500).send('Error updating recipe'));
-//       }
-
-//       // First delete existing recipe_ingredients entries
-//       const deleteIngredientsQuery = 'DELETE FROM recipe_ingredients WHERE recipe_id = ?';
-//       database.query(deleteIngredientsQuery, [recipeId], err => {
-//         if (err) {
-//           return database.rollback(() => res.status(500).send('Error removing old ingredients'));
-//         }
-
-//         // Insert or reuse ingredients
-//         const ingredientPromises = ingredients.map(ingredient => {
-//           return new Promise((resolve, reject) => {
-//             const checkIngredientQuery = 'SELECT * FROM ingredients WHERE ingredient_name = ?';
-//             database.query(checkIngredientQuery, [ingredient.name], (err, existing) => {
-//               if (err) return reject(err);
-
-//               if (existing.length > 0) {
-//                 resolve(existing[0].ingredient_id);
-//               } else {
-//                 const insertIngredientQuery = `
-//                   INSERT INTO ingredients (ingredient_name, unit_of_measurement)
-//                   VALUES (?, ?)
-//                 `;
-//                 database.query(insertIngredientQuery, [ingredient.name, ingredient.unit], (err, result) => {
-//                   if (err) return reject(err);
-//                   resolve(result.insertId);
-//                 });
-//               }
-//             });
-//           });
-//         });
-
-//         Promise.all(ingredientPromises)
-//           .then(ingredientIds => {
-//             const insertIngredientLinks = ingredientIds.map((ingredientId, index) => {
-//               const insertRecipeIngredientQuery = `
-//                 INSERT INTO recipe_ingredients
-//                 (recipe_id, ingredient_id, quantity, is_optional)
-//                 VALUES (?, ?, ?, ?)
-//               `;
-//               return new Promise((resolve, reject) => {
-//                 database.query(
-//                   insertRecipeIngredientQuery,
-//                   [recipeId, ingredientId, ingredients[index].quantity, ingredients[index].is_optional],
-//                   err => {
-//                     if (err) return reject(err);
-//                     resolve();
-//                   }
-//                 );
-//               });
-//             });
-
-//             Promise.all(insertIngredientLinks)
-//               .then(() => {
-//                 database.commit(err => {
-//                   if (err) {
-//                     return database.rollback(() => res.status(500).send('Error committing changes'));
-//                   }
-//                   res.status(200).send({ message: 'Recipe updated successfully' });
-//                 });
-//               })
-//               .catch(err => {
-//                 database.rollback(() => res.status(500).send('Error linking new ingredients'));
-//               });
-//           })
-//           .catch(err => {
-//             database.rollback(() => res.status(500).send('Error processing updated ingredients'));
-//           });
-//       });
-//     });
-//   });
-// });
-
+//update a recipe
 app.put('/recipes/:id', (req, res) => {
   const recipeId = req.params.id;
-  const { recipe_name, image_url, category_id, instructions, ingredients } = req.body;
+  const { recipe_name, image_url, category_id, duration, instructions, ingredients } = req.body;
 
   database.beginTransaction(err => {
     if (err) return res.status(500).send('Error starting SQL transaction');
@@ -383,10 +206,10 @@ app.put('/recipes/:id', (req, res) => {
     // Step 1: Update the main recipe details
     const updateRecipeQuery = `
       UPDATE recipes 
-      SET recipe_name = ?, image_url = ?, category_id = ?, instructions = ?
+      SET recipe_name = ?, image_url = ?, category_id = ?, duration=?, instructions = ?
       WHERE recipe_id = ?
     `;
-    database.query(updateRecipeQuery, [recipe_name, image_url, category_id, instructions, recipeId], err => {
+    database.query(updateRecipeQuery, [recipe_name, image_url, category_id, duration, instructions, recipeId], err => {
       if (err) {
         return database.rollback(() => res.status(500).send('Error updating recipe'));
       }
