@@ -7,6 +7,7 @@ import UsersPage from './pages/UsersPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import MyRecipes from './pages/MyRecipes';
 import LoginPage from './pages/LoginPage';
+import CategoryPage from './pages/CategoryPage';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="recipes/:id" element={<RecipeDetailPage />} />
         <Route path="profile" element={<UsersPage />} />
         <Route path="my-recipes" element={<MyRecipes />} />
+        <Route path="categories" element={<CategoryPage />} />
       </Route>
     </Routes>
   );

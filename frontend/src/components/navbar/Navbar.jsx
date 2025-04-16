@@ -22,7 +22,8 @@ import { MdOutlineLogout } from 'react-icons/md';
 export const NAVBAR_ITEMS = [
   { label: 'Home', link: '/' },
   { label: 'Recipes', link: '/recipes' },
-  { label: 'My Recipes', link: '/my-recipes' }
+  { label: 'My Recipes', link: '/my-recipes' },
+  { label: 'Categories', link: '/categories' }
 ];
 
 const hoverStyle = {
