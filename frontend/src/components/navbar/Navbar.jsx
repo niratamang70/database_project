@@ -15,6 +15,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa6';
 import NavLink from './NavLink';
 import HamburgerMenu from './HamburgerMenu';
+import { CgProfile } from 'react-icons/cg';
+import { RiSettings2Line } from 'react-icons/ri';
+import { MdOutlineLogout } from 'react-icons/md';
 
 export const NAVBAR_ITEMS = [
   { label: 'Home', link: '/' },
@@ -53,13 +56,22 @@ export default function Navbar() {
                   <FaUser color="orange" />
                 </MenuButton>
                 <MenuList>
+                  <Link to="/profile">
+                    <MenuItem>
+                      <CgProfile style={{ marginRight: '0.5rem' }} />
+                      My profile
+                    </MenuItem>
+                  </Link>
                   <MenuItem>
-                    <Link to="/profile">My Profile</Link>
+                    <RiSettings2Line style={{ marginRight: '0.5rem' }} />
+                    Settings
                   </MenuItem>
-                  <MenuItem>Settings</MenuItem>
-                  <MenuItem>
-                    <Link to="/login">Log out</Link>
-                  </MenuItem>
+                  <Link to="/login">
+                    <MenuItem>
+                      <MdOutlineLogout style={{ marginRight: '0.5rem' }} />
+                      Log out
+                    </MenuItem>
+                  </Link>
                 </MenuList>
               </Menu>
             </Stack>

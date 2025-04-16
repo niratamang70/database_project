@@ -434,6 +434,9 @@ const MyRecipes = () => {
                             {ingredientUnit?.name}
                           </option>
                         ))}
+                        {/* <option value="add_new" style={{ fontWeight: 'bold' }}>
+                          ➕ Add New Category
+                        </option> */}
                       </Select>
                       <Icon as={DeleteIcon} cursor="pointer" onClick={() => removeIngredient(index)} />
                     </Flex>
