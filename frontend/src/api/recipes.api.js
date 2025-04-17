@@ -29,3 +29,14 @@ export const deleteRecipe = async id => {
     throw error;
   }
 };
+
+
+export const getAllMyRecipes = async id => {
+  try {
+    const response = await axios.get(`http://localhost:3001/recipes/user/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting recipe:', error);
+    throw error;
+  }
+};

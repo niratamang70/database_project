@@ -3,7 +3,16 @@ import { Clock } from 'react-feather';
 import { FaRegEdit } from 'react-icons/fa';
 import { AiOutlineDelete } from 'react-icons/ai';
 
-const ProductCard = ({ id, title, time, image, handleRecipeEdit, handleShowRecipeDetails, handleRecipeDelete }) => {
+const ProductCard = ({
+  id,
+  title,
+  time,
+  image,
+  handleRecipeEdit,
+  handleShowRecipeDetails,
+  handleRecipeDelete,
+  hasPermission
+}) => {
   return (
     <Center>
       <Box
@@ -73,10 +82,12 @@ const ProductCard = ({ id, title, time, image, handleRecipeEdit, handleShowRecip
               {time ?? '1 hour'}
             </Text>
           </Stack>
-          <Stack direction={'row'} align={'center'}>
-            <FaRegEdit size={20} style={{ cursor: 'pointer' }} onClick={() => handleRecipeEdit(id)} />
-            <AiOutlineDelete size={22} style={{ cursor: 'pointer' }} onClick={() => handleRecipeDelete(id)} />
-          </Stack>
+          {hasPermission && (
+            <Stack direction={'row'} align={'center'}>
+              <FaRegEdit size={20} style={{ cursor: 'pointer' }} onClick={() => handleRecipeEdit(id)} />
+              <AiOutlineDelete size={22} style={{ cursor: 'pointer' }} onClick={() => handleRecipeDelete(id)} />
+            </Stack>
+          )}
         </Stack>
       </Box>
     </Center>

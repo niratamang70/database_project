@@ -28,11 +28,11 @@ import {
   InputRightElement
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { AddIcon, DeleteIcon, RepeatIcon, SearchIcon } from '@chakra-ui/icons'; // Chakra UI components for UI elements
+import { AddIcon, DeleteIcon, RepeatIcon, SearchIcon } from '@chakra-ui/icons';
 
 import ProductCard from '../components/card/ProductCard';
 import { useNavigate } from 'react-router-dom';
-import { deleteRecipe, getAllRecipes, showRecipeDetails } from '../api/recipes.api';
+import { deleteRecipe, getAllMyRecipes, showRecipeDetails } from '../api/recipes.api';
 import { getAllCategories } from '../api/categories.api';
 import { getAllIngredients, getAllIngredientUnit } from '../api/ingredients.api';
 import { GiKnifeFork } from 'react-icons/gi';
@@ -61,6 +61,8 @@ const MyRecipes = () => {
   const [searchName, setSearchName] = useState('');
   const [searchCategory, setSearchCategory] = useState('');
   const [cookingTime, setCookingTime] = useState('');
+
+  const user = JSON.parse(localStorage.getItem('user'));
 
   // Handle recipe name change
   const handleRecipeNameChange = e => {
@@ -110,6 +112,7 @@ const MyRecipes = () => {
       category_id: categoryId,
       image_url: recipeImage,
       duration: cookingTime,
+      user_id: user.user_id,
       instructions,
       ingredients
     };
@@ -144,7 +147,7 @@ const MyRecipes = () => {
       }
 
       // fetch all recipes after add or update
-      const allRecipeResponse = await getAllRecipes();
+      const allRecipeResponse = await getAllMyRecipes(user.user_id);
       setRecipes(allRecipeResponse);
 
       // clear form after add or update
@@ -204,7 +207,7 @@ const MyRecipes = () => {
         position: 'top-right',
         isClosable: true
       });
-      const data = await getAllRecipes();
+      const data = await getAllMyRecipes(user.user_id);
       setRecipes(data);
     }
   };
@@ -219,7 +222,7 @@ const MyRecipes = () => {
       if (searchName) queryParams.append('name', searchName);
       if (searchCategory) queryParams.append('category', searchCategory);
 
-      const response = await axios.get(`http://localhost:3001/recipes/all?${queryParams.toString()}`);
+      const response = await axios.get(`http://localhost:3001/recipes/user/${user?.user_id}?${queryParams.toString()}`);
       setRecipes(response.data);
     } catch (error) {
       console.error('Search failed:', error);
@@ -229,14 +232,14 @@ const MyRecipes = () => {
   const resetSearch = async () => {
     setSearchName('');
     setSearchCategory('');
-    const data = await getAllRecipes();
+    const data = await getAllMyRecipes(user?.user_id);
     setRecipes(data);
   };
 
   useEffect(() => {
     const fetchRecipes = async () => {
       setLoading(true);
-      const data = await getAllRecipes();
+      const data = await getAllMyRecipes(user?.user_id);
       setRecipes(data);
       setLoading(false);
     };
@@ -330,7 +333,13 @@ const MyRecipes = () => {
             </Center>
           )}
 
-          <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={10} gap={5} alignItems="flex-end" marginTop={5}>
+          <SimpleGrid
+            columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
+            spacing={10}
+            gap={5}
+            alignItems="flex-end"
+            marginTop={5}
+          >
             {recipes?.map((recipe, index) => (
               <ProductCard
                 title={recipe.recipe_name}
@@ -341,6 +350,7 @@ const MyRecipes = () => {
                 handleRecipeEdit={updateRecipe}
                 handleShowRecipeDetails={handleShowRecipeDetails}
                 handleRecipeDelete={handleDeleteRecipe}
+                hasPermission={true}
               />
             ))}
             <Button leftIcon={<AddIcon />} colorScheme="orange" onClick={createRecipe} marginTop={5} width="50%">

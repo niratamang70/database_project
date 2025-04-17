@@ -12,7 +12,6 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import { Fragment, useState } from 'react';
-import { NAVBAR_ITEMS } from './Navbar';
 import { SmallCloseIcon, HamburgerIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import NavLink from './NavLink';
 
@@ -42,6 +41,15 @@ function HamburgerMenu() {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const NAVBAR_ITEMS = [
+    { label: 'Home', link: '/' },
+    { label: 'Recipes', link: '/recipes' },
+    ...(user?.role === 'user' || user?.role === 'superuser' ? [{ label: 'My Recipes', link: '/my-recipes' }] : []),
+    ...(user?.role === 'superuser' ? [{ label: 'Categories', link: '/categories' }] : [])
+  ];
 
   const handleOpen = () => {
     setMenuOpen(true);

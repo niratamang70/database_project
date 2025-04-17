@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import {
   Box,
+  Button,
   Flex,
   HStack,
   Menu,
@@ -11,20 +12,13 @@ import {
   useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa6';
 import NavLink from './NavLink';
 import HamburgerMenu from './HamburgerMenu';
 import { CgProfile } from 'react-icons/cg';
 import { RiSettings2Line } from 'react-icons/ri';
 import { MdOutlineLogout } from 'react-icons/md';
-
-export const NAVBAR_ITEMS = [
-  { label: 'Home', link: '/' },
-  { label: 'Recipes', link: '/recipes' },
-  { label: 'My Recipes', link: '/my-recipes' },
-  { label: 'Categories', link: '/categories' }
-];
 
 const hoverStyle = {
   borderBottom: '2px',
@@ -34,6 +28,24 @@ const hoverStyle = {
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
   const location = useLocation();
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const NAVBAR_ITEMS = [
+    { label: 'Home', link: '/' },
+    { label: 'Recipes', link: '/recipes' },
+    ...(user?.role === 'user' || user?.role === 'superuser' ? [{ label: 'My Recipes', link: '/my-recipes' }] : []),
+    ...(user?.role === 'superuser' ? [{ label: 'Categories', link: '/categories' }] : [])
+  ];
+
+  const handleLogOut = () => {
+    localStorage.removeItem('user');
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
 
   return (
     <Fragment>
@@ -51,31 +63,33 @@ export default function Navbar() {
             ))}
           </HStack>
           <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
-            <Stack direction={'row'} spacing={7}>
-              <Menu>
-                <MenuButton>
-                  <FaUser color="orange" />
-                </MenuButton>
-                <MenuList>
-                  <Link to="/profile">
+            {!user ? (
+              <Button onClick={handleLogin}>login</Button>
+            ) : (
+              <Stack direction={'row'} spacing={7}>
+                <Menu>
+                  <MenuButton>
+                    <FaUser color="orange" />
+                  </MenuButton>
+                  <MenuList>
+                    <Link to="/profile">
+                      <MenuItem>
+                        <CgProfile style={{ marginRight: '0.5rem' }} />
+                        My profile
+                      </MenuItem>
+                    </Link>
                     <MenuItem>
-                      <CgProfile style={{ marginRight: '0.5rem' }} />
-                      My profile
+                      <RiSettings2Line style={{ marginRight: '0.5rem' }} />
+                      Settings
                     </MenuItem>
-                  </Link>
-                  <MenuItem>
-                    <RiSettings2Line style={{ marginRight: '0.5rem' }} />
-                    Settings
-                  </MenuItem>
-                  <Link to="/login">
-                    <MenuItem>
+                    <MenuItem onClick={handleLogOut}>
                       <MdOutlineLogout style={{ marginRight: '0.5rem' }} />
                       Log out
                     </MenuItem>
-                  </Link>
-                </MenuList>
-              </Menu>
-            </Stack>
+                  </MenuList>
+                </Menu>
+              </Stack>
+            )}
           </Flex>
         </Flex>
       </Box>

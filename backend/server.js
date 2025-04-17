@@ -37,14 +37,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// get all recipes
-// app.get('/recipes/all', (req, res) => {
-//   database.query('SELECT recipe_id, recipe_name, image_url, duration FROM recipes', (err, results) => {
-//     if (err) return res.status(500).send(err);
-//     res.json(results);
-//   });
-// });
-
 app.get('/recipes/all', (req, res) => {
   const { name, category } = req.query;
 
@@ -67,14 +59,6 @@ app.get('/recipes/all', (req, res) => {
   }
 
   database.query(query, params, (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.json(results);
-  });
-});
-
-//get all the recipes
-app.get('/recipes/all', (req, res) => {
-  database.query('SELECT * FROM recipes', (err, results) => {
     if (err) return res.status(500).send(err);
     res.json(results);
   });
@@ -144,7 +128,7 @@ app.get('/recipes/:id', (req, res) => {
 
 //create a new recipe
 app.post('/recipes', (req, res) => {
-  const { recipe_name, image_url, category_id, duration, instructions, ingredients } = req.body;
+  const { recipe_name, image_url, category_id, duration, instructions, ingredients, user_id } = req.body;
 
   database.beginTransaction(err => {
     if (err) {
@@ -152,46 +136,50 @@ app.post('/recipes', (req, res) => {
     }
 
     const insertRecipeQuery = `
-      INSERT INTO recipes (recipe_name, image_url, category_id, duration, instructions)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO recipes (recipe_name, image_url, category_id, duration, instructions, user_id )
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
-    database.query(insertRecipeQuery, [recipe_name, image_url, category_id, duration, instructions], (err, result) => {
-      if (err) {
-        return database.rollback(() => res.status(500).send('Error adding recipe'));
-      }
+    database.query(
+      insertRecipeQuery,
+      [recipe_name, image_url, category_id, duration, instructions, user_id],
+      (err, result) => {
+        if (err) {
+          return database.rollback(() => res.status(500).send('Error adding recipe'));
+        }
 
-      const recipeId = result.insertId;
+        const recipeId = result.insertId;
 
-      const insertRecipeIngredientsPromises = ingredients.map(ingredient => {
-        const insertRecipeIngredientQuery = `
+        const insertRecipeIngredientsPromises = ingredients.map(ingredient => {
+          const insertRecipeIngredientQuery = `
           INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, is_optional)
           VALUES (?, ?, ?, ?)
         `;
-        return new Promise((resolve, reject) => {
-          database.query(
-            insertRecipeIngredientQuery,
-            [recipeId, ingredient.ingredient_id, ingredient.quantity, ingredient.is_optional],
-            err => {
-              if (err) return reject(err);
-              resolve();
-            }
-          );
-        });
-      });
-
-      Promise.all(insertRecipeIngredientsPromises)
-        .then(() => {
-          database.commit(err => {
-            if (err) {
-              return database.rollback(() => res.status(500).send('Error committing transaction'));
-            }
-            res.status(201).send({ message: 'Recipe added successfully' });
+          return new Promise((resolve, reject) => {
+            database.query(
+              insertRecipeIngredientQuery,
+              [recipeId, ingredient.ingredient_id, ingredient.quantity, ingredient.is_optional],
+              err => {
+                if (err) return reject(err);
+                resolve();
+              }
+            );
           });
-        })
-        .catch(err => {
-          database.rollback(() => res.status(500).send('Error linking ingredients to recipe'));
         });
-    });
+
+        Promise.all(insertRecipeIngredientsPromises)
+          .then(() => {
+            database.commit(err => {
+              if (err) {
+                return database.rollback(() => res.status(500).send('Error committing transaction'));
+              }
+              res.status(201).send({ message: 'Recipe added successfully', recipe_id: recipeId });
+            });
+          })
+          .catch(err => {
+            database.rollback(() => res.status(500).send('Error linking ingredients to recipe'));
+          });
+      }
+    );
   });
 });
 
@@ -332,6 +320,100 @@ app.get('/ingredients-unit/all', (req, res) => {
   database.query('SELECT * FROM ingredient_unit', (err, results) => {
     if (err) return res.status(500).send(err);
     res.json(results);
+  });
+});
+
+//get all the recipes created by the specific user
+app.get('/recipes/user/:user_id', (req, res) => {
+  const { user_id } = req.params;
+  const { name, category } = req.query;
+  let query = `
+    SELECT r.recipe_id, r.recipe_name, r.image_url, r.duration
+    FROM recipes r
+    LEFT JOIN categories c ON r.category_id = c.category_id
+    WHERE r.user_id = ?`;
+
+  const params = [user_id];
+
+  if (name) {
+    query += ` AND r.recipe_name LIKE ?`;
+    params.push(`%${name}%`);
+  }
+
+  if (category) {
+    query += ` AND c.category_name LIKE ?`;
+    params.push(`%${category}%`);
+  }
+
+  database.query(query, params, (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+//user login
+app.post('/user/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
+  }
+
+  const query = `
+    SELECT user_id, username,first_name,last_name, role, password 
+    FROM users 
+    WHERE username = ?
+  `;
+
+  database.query(query, [username], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Database error', err });
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    const user = results[0];
+
+    if (password !== user.password) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    res.status(200).json({
+      user_id: user.user_id,
+      username: user.username,
+      fullname: `${user.first_name} ${user.last_name}`,
+      role: user.role
+    });
+  });
+});
+
+// add category
+app.post('/categories/create', (req, res) => {
+  const { category_name, image_url, description } = req.body;
+
+  if (!category_name) {
+    return res.status(400).json({ error: 'Category name is required' });
+  }
+
+  const query = 'INSERT INTO categories (category_name, image_url, description) VALUES (?, ?, ?)';
+  database.query(query, [category_name, image_url, description], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to add category' });
+    }
+
+    const categoryId = result.insertId;
+
+    database.query('SELECT * FROM categories', (err2, categories) => {
+      if (err2) {
+        console.error('Error fetching categories:', err2);
+        return res.status(500).json({ error: 'Category added but failed to fetch categories' });
+      }
+
+      res.status(201).json({
+        message: 'Category added successfully',
+        data: categories,
+        category_id: categoryId
+      });
+    });
   });
 });
 
