@@ -64,7 +64,7 @@ export default function Navbar() {
           </HStack>
           <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
             {!user ? (
-              <Button onClick={handleLogin}>login</Button>
+              <Button colorScheme='orange' onClick={handleLogin}>login / register</Button>
             ) : (
               <Stack direction={'row'} spacing={7}>
                 <Menu>

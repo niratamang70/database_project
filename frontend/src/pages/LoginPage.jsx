@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Container, Heading, Flex, FormControl, FormLabel, Input, Button, useToast } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { Box, Container, Heading, Flex, FormControl, FormLabel, Input, Button, useToast, Text } from '@chakra-ui/react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = () => {
@@ -58,6 +58,12 @@ const LoginPage = () => {
           <Button colorScheme="orange" width="full" marginTop={5} onClick={handleUserLogin}>
             Login
           </Button>
+          <Text>
+            No account ? {''}
+            <Link to="/register" style={{ textDecoration: 'underline', color: 'orange' }}>
+              Register
+            </Link>
+          </Text>
         </Flex>
       </Box>
     </Container>

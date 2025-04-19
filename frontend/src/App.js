@@ -9,11 +9,13 @@ import MyRecipes from './pages/MyRecipes';
 import LoginPage from './pages/LoginPage';
 import CategoryPage from './pages/CategoryPage';
 import ProtectedRoute from './components/route/ProtectedRoute';
+import RegisterPage from './pages/RegisterPage';
 
 const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<RootLayout />}>
         <Route index element={<HomePage />} />

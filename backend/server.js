@@ -417,4 +417,35 @@ app.post('/categories/create', (req, res) => {
   });
 });
 
+//register user
+app.post('/user/register', async (req, res) => {
+  const { username, first_name, last_name, password, role = 'user' } = req.body;
+
+  if (!username || !first_name || !last_name || !password) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  try {
+    const checkQuery = 'SELECT * FROM users WHERE username = ?';
+    database.query(checkQuery, [username], async (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Server error' });
+      }
+      if (results.length > 0) {
+        return res.status(400).json({ error: 'User already exists' });
+      }
+
+      const insertQuery = 'INSERT INTO users (username, first_name,last_name, password, role) VALUES (?, ?, ?, ?, ?)';
+      database.query(insertQuery, [username, first_name, last_name, password, role], (insertErr, result) => {
+        if (insertErr) {
+          return res.status(500).json({ error: 'Failed to register user' });
+        }
+        res.status(201).json({ message: 'User registered successfully', user_id: result.insertId });
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
