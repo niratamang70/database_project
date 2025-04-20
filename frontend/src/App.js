@@ -11,6 +11,7 @@ import CategoryPage from './pages/CategoryPage';
 import ProtectedRoute from './components/route/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage';
 import IngredientUnitPage from './pages/IngredientUnitPage';
+import IngredientPage from './pages/IngredientsPage';
 
 const App = () => {
   return (
@@ -51,6 +52,15 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={['superuser']}>
               <IngredientUnitPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="ingredients"
+          element={
+            <ProtectedRoute allowedRoles={['superuser']}>
+              <IngredientPage />
             </ProtectedRoute>
           }
         />

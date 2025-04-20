@@ -38,7 +38,8 @@ export default function Navbar() {
     ...(user?.role === 'superuser'
       ? [
           { label: 'Categories', link: '/categories' },
-          { label: 'Ingredients Unit', link: '/ingredient-units' }
+          { label: 'Ingredients Unit', link: '/ingredient-units' },
+          { label: 'Ingredients', link: '/ingredients' }
         ]
       : [])
   ];

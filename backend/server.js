@@ -315,6 +315,24 @@ app.get('/ingredients/all', (req, res) => {
   });
 });
 
+//create a new ingredient unit
+app.post('/ingredients/create', (req, res) => {
+  const { ingredient_name, unit_id } = req.body;
+  if (!ingredient_name) {
+    return res.status(400).json({ error: 'Ingredient name is required' });
+  }
+  const query = 'INSERT INTO ingredients (ingredient_name,unit_id) VALUES (?, ?)';
+  database.query(query, [ingredient_name, unit_id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to add ingredient' });
+    }
+    res.status(201).json({
+      message: 'Ingredient added successfully',
+      ingredient_id: result.insertId
+    });
+  });
+});
+
 //get all ingredient units
 app.get('/ingredients-unit/all', (req, res) => {
   database.query('SELECT * FROM ingredient_unit', (err, results) => {
@@ -340,7 +358,6 @@ app.post('/ingredients-unit/create', (req, res) => {
     });
   });
 });
-
 
 //get all the recipes created by the specific user
 app.get('/recipes/user/:user_id', (req, res) => {
