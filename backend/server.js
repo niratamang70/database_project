@@ -448,4 +448,22 @@ app.post('/user/register', async (req, res) => {
   }
 });
 
+// fetch user details ny user id
+app.get('/api/users/:id', (req, res) => {
+  const userId = req.params.id;
+
+  const query = 'SELECT user_id, username, fist_name,last_name, role FROM users WHERE user_id = ?';
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to fetch user details' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(results[0]);
+  });
+});
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
