@@ -119,7 +119,7 @@ const IngredientPage = () => {
         </Center>
       )}
       <Box my={9}>
-        <Heading>Ingredient unit</Heading>
+        <Heading>Ingredients</Heading>
         {ingredients?.map(ingredient => (
           <Box key={ingredient.ingredient_id} padding={4} borderWidth="1px" borderRadius="md" marginTop={4}>
             <Text fontSize="lg">{ingredient.ingredient_name}</Text>
