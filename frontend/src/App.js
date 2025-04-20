@@ -20,14 +20,7 @@ const App = () => {
       <Route element={<RootLayout />}>
         <Route index element={<HomePage />} />
         <Route path="recipes" element={<RecipePage />} />
-        <Route
-          path="recipes/:id"
-          element={
-            <ProtectedRoute allowedRoles={['user', 'superuser']}>
-              <RecipeDetailPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="recipes/:id" element={<RecipeDetailPage />} />
         <Route
           path="my-recipes"
           element={

@@ -50,6 +50,7 @@ const ProductCard = ({
               filter: 'blur(20px)'
             }
           }}
+          onClick={() => handleShowRecipeDetails(id)}
         >
           <Image
             rounded={'lg'}
