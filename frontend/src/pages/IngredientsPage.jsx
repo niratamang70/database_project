@@ -126,7 +126,7 @@ const IngredientPage = () => {
           </Box>
         ))}
         <Button leftIcon={<AddIcon />} colorScheme="orange" onClick={onOpen} marginTop={5}>
-          Add unit
+          Add ingredient
         </Button>
       </Box>
 
