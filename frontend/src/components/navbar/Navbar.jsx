@@ -35,7 +35,12 @@ export default function Navbar() {
     { label: 'Home', link: '/' },
     { label: 'Recipes', link: '/recipes' },
     ...(user?.role === 'user' || user?.role === 'superuser' ? [{ label: 'My Recipes', link: '/my-recipes' }] : []),
-    ...(user?.role === 'superuser' ? [{ label: 'Categories', link: '/categories' }] : [])
+    ...(user?.role === 'superuser'
+      ? [
+          { label: 'Categories', link: '/categories' },
+          { label: 'Ingredients Unit', link: '/ingredient-units' }
+        ]
+      : [])
   ];
 
   const handleLogOut = () => {
@@ -64,7 +69,9 @@ export default function Navbar() {
           </HStack>
           <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
             {!user ? (
-              <Button colorScheme='orange' onClick={handleLogin}>login / register</Button>
+              <Button colorScheme="orange" onClick={handleLogin}>
+                login / register
+              </Button>
             ) : (
               <Stack direction={'row'} spacing={7}>
                 <Menu>

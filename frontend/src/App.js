@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import CategoryPage from './pages/CategoryPage';
 import ProtectedRoute from './components/route/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage';
+import IngredientUnitPage from './pages/IngredientUnitPage';
 
 const App = () => {
   return (
@@ -42,6 +43,14 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={['superuser']}>
               <CategoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="ingredient-units"
+          element={
+            <ProtectedRoute allowedRoles={['superuser']}>
+              <IngredientUnitPage />
             </ProtectedRoute>
           }
         />

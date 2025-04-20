@@ -106,7 +106,7 @@ const CategoryPage = () => {
             </GridItem>
           ))}
           <Button leftIcon={<AddIcon />} colorScheme="orange" onClick={onOpen} marginTop={5} width={'80%'}>
-            Add recipe
+            Add Category
           </Button>
         </Grid>
       </Box>
