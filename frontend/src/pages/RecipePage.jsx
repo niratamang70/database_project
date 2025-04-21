@@ -355,9 +355,11 @@ const Recipes = () => {
                 hasPermission={isSuperUser}
               />
             ))}
-            <Button leftIcon={<AddIcon />} colorScheme="orange" onClick={createRecipe} marginTop={5} width="50%">
-              Add recipe
-            </Button>
+            {isSuperUser && (
+              <Button leftIcon={<AddIcon />} colorScheme="orange" onClick={createRecipe} marginTop={5} width="50%">
+                Add recipe
+              </Button>
+            )}
           </SimpleGrid>
         </Box>
       </Container>
